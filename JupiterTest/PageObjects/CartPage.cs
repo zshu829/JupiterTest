@@ -1,10 +1,7 @@
 ﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
+using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace JupiterTest.PageObjects
 {
@@ -86,40 +83,49 @@ namespace JupiterTest.PageObjects
 
         public Boolean VerifyTotalPrice()
         {
-            IList<IWebElement> i = driver.FindElements(By.XPath("//tr[@class]"));
-            int x = i.Count();
-
-
-
-
-            String subTotal1 = GetItemValue(1, 4, "text", false);
-            String subTotal2 = GetItemValue(2, 4, "text", false);
-            String subTotal3 = GetItemValue(3, 4, "text", false);
-            String total = actuaTotal.Text;
-            String countTotal = "";
             Boolean result = false;
+            //get the items' row
+            IList<IWebElement> rowTotal = driver.FindElements(By.XPath("//tr[@class]"));
+            String[] subTotal = new string[rowTotal.Count()];
+            float[] floats = new float[rowTotal.Count()];  
+            float countTotal = 0;
+            for(int i=0;i< rowTotal.Count(); i++)
+            {
+                //get the each subTotal value
+                subTotal[i] = GetItemValue(i+1, 4, "text", false);
+                //divide the "$"
+                subTotal[i] = subTotal[i].Substring(1, subTotal[i].Length - 1);
+                //convert string to float
+                floats[i] = Convert.ToSingle(subTotal[i]);
+                //add sub totals
+                countTotal = countTotal + floats[i];
+            }
 
-            //divide the "$"
-            subTotal1 = subTotal1.Substring(1, subTotal1.Length - 1);
-            subTotal2 = subTotal2.Substring(1, subTotal2.Length - 1);
-            subTotal3 = subTotal3.Substring(1, subTotal3.Length - 1);
+            String total = actuaTotal.Text;
+            //delete the "Total: " in total price
             total = total.Replace("Total: ", "");
+            //convert String to float
+            float d = Convert.ToSingle(total);
+            String totalPrice = (Math.Round(d, 2)).ToString();
 
-            float a = Convert.ToSingle(subTotal1);
-            float b = Convert.ToSingle(subTotal2);
-            float c = Convert.ToSingle(subTotal3);
-
-            //float d = Convert.ToSingle(total);
-            //String totalPrice = (Math.Round(d, 2)).ToString();
-            //countTotal = (a + b + c).ToString();
-            //        //verify subtotal price
-            //        if (totalPrice.Equals(countTotal))
-            //        {
-            //            result = true;
-            //        }
-
+            //verify subtotal price
+            if (totalPrice.Equals(countTotal.ToString()))
+            {
+                result = true;
+            }
             return result;
 
+        }
+
+        public void ClickEmptyCart()
+        {
+            IWebElement EmptyCart = driver.FindElement(By.CssSelector("body > div.container-fluid > div > form > table > tfoot > tr:nth-child(2) > td > ng-confirm > a"));
+            EmptyCart.Click();
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector("body > div.popup.modal.hide.ng-scope.in > div.modal-footer > a.btn.btn-success")));
+            IWebElement confirmMsg = driver.FindElement(By.CssSelector("body > div.popup.modal.hide.ng-scope.in > div.modal-footer > a.btn.btn-success"));
+            confirmMsg.Click();
         }
 
         private String GetItemSubTotal(String quantity, String price)
@@ -162,8 +168,7 @@ namespace JupiterTest.PageObjects
                     {
                         value = element.Text;
                     }
-
-                    Debug.Print($"Input: {value}");
+                    //Debug.Print($"Input: {value}");
 
                 }
             }

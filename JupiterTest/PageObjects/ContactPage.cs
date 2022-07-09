@@ -13,7 +13,7 @@ namespace JupiterTest.PageObjects
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("contact-submit-btn")));
             IWebElement submitButton = driver.FindElement(By.Id("contact-submit-btn"));
             submitButton.Click();
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
         }
 
         public void EnterForename(string name)
@@ -54,7 +54,7 @@ namespace JupiterTest.PageObjects
         public Boolean VerifySubmissionMessage(string msg)
         {
             Boolean result = false;
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector("body > div.container-fluid > div > div")));
             IWebElement submissionMsg = driver.FindElement(By.CssSelector("body > div.container-fluid > div > div"));
             
@@ -62,6 +62,7 @@ namespace JupiterTest.PageObjects
             {
                 result = true;
             }
+            Thread.Sleep(3000);
             return result;
         }
 

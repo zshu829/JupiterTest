@@ -121,11 +121,12 @@ namespace JupiterTest.PageObjects
         {
             IWebElement EmptyCart = driver.FindElement(By.CssSelector("body > div.container-fluid > div > form > table > tfoot > tr:nth-child(2) > td > ng-confirm > a"));
             EmptyCart.Click();
-
+            Thread.Sleep(3000);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector("body > div.popup.modal.hide.ng-scope.in > div.modal-footer > a.btn.btn-success")));
             IWebElement confirmMsg = driver.FindElement(By.CssSelector("body > div.popup.modal.hide.ng-scope.in > div.modal-footer > a.btn.btn-success"));
             confirmMsg.Click();
+            Thread.Sleep(3000);
         }
 
         private String GetItemSubTotal(String quantity, String price)
